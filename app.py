@@ -53,7 +53,7 @@ col1, col2 = st.columns([1.5, 1], gap="large")
 
 with col1:
     st.subheader("🔥 Top 10 Videos")
-    df_top = load_data('./results/top_videos_by_views.csv')
+    df_top = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/top_videos_by_views.csv')
     
     if df_top is not None:
         # Use Plotly for interactive chart
@@ -78,7 +78,7 @@ with col1:
 
 with col2:
     st.subheader("📊 Channel Insights")
-    df_channels = load_data('./results/channel_insights.csv')
+    df_channels = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/channel_insights.csv')
     
     if df_channels is not None:
         # Configure the column to show a progress bar instead of just numbers
@@ -107,7 +107,9 @@ col3, col4 = st.columns([2,1], gap="large")
 
 with col3:
     st.subheader("📈 Daily Growth Analysis")
-    df_growth = load_data('./results/daily_growth.csv')
+    df_growth = load_data('')
+
+    df_growth = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/daily_growth.csv')
 
     if df_growth is not None:
         # Sort and Slice Top 10
@@ -176,7 +178,7 @@ with col3:
 
 with col4:
     st.subheader("📉 Daily Rank Movers")
-    df_rank = load_data('./results/daily_rank_movers.csv')
+    df_rank = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/daily_rank_movement.csv')
 
     if df_rank is not None:
         # --- FIX STARTS HERE ---
@@ -224,7 +226,7 @@ with col4:
 st.markdown("---")
 st.subheader("🆕 New Entries Radar")
 
-df_new = load_data('./results/new_entries.csv')
+df_new = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/new_entries.csv')
 
 if df_new is not None and not df_new.empty:
     # Instead of a boring list, let's use Metrics or Tiles
