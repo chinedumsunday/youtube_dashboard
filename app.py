@@ -53,7 +53,7 @@ col1, col2 = st.columns([1.5, 1], gap="large")
 
 with col1:
     st.subheader("🔥 Top 10 Videos")
-    df_top = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/top_videos_by_views.csv')
+    df_top = load_data('./results/top_videos_by_views.csv')
     
     if df_top is not None:
         # Use Plotly for interactive chart
@@ -78,7 +78,7 @@ with col1:
 
 with col2:
     st.subheader("📊 Channel Insights")
-    df_channels = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/channel_insights.csv')
+    df_channels = load_data('./results/channel_insights.csv')
     
     if df_channels is not None:
         # Configure the column to show a progress bar instead of just numbers
@@ -107,7 +107,7 @@ col3, col4 = st.columns([2,1], gap="large")
 
 with col3:
     st.subheader("📈 Daily Growth Analysis")
-    df_growth = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/daily_growth.csv')
+    df_growth = load_data('./results/daily_growth.csv')
 
     if df_growth is not None:
         # Sort and Slice Top 10
@@ -176,9 +176,17 @@ with col3:
 
 with col4:
     st.subheader("📉 Daily Rank Movers")
-    df_rank = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/daily_rank_movement.csv')
+    df_rank = load_data('./results/daily_rank_movers.csv')
 
     if df_rank is not None:
+        # --- FIX STARTS HERE ---
+        # 1. Fill NaNs to prevent errors
+        df_rank['daily_rank_change'] = df_rank['daily_rank_change'].fillna(0)
+        
+        # 2. Create a specific column for bubble size (must be positive)
+        df_rank['magnitude'] = df_rank['daily_rank_change'].abs()
+        # -----------------------
+
         # Compact Sparkline Table
         st.dataframe(
             df_rank.head(10),
@@ -187,7 +195,7 @@ with col4:
                     "Rank Trend",
                     y_min=-10, y_max=10
                 ),
-                "title": st.column_config.TextColumn("Video", width="small"), # Smaller text to fit
+                "title": st.column_config.TextColumn("Video", width="small"),
             },
             hide_index=True,
             use_container_width=True
@@ -198,15 +206,16 @@ with col4:
             df_rank, 
             x='fetched_date', 
             y='daily_rank_change', 
-            color='video_id',
-            size='daily_rank_change', 
-            size_max=15
+            color='title',
+            size='magnitude', # <--- CHANGE THIS to use the new positive column
+            size_max=15,
+            hover_data=['daily_rank_change'] # Keep the real value in the tooltip
         )
         fig_rank.update_layout(
             plot_bgcolor="rgba(0,0,0,0)", 
             xaxis=(dict(showgrid=False)),
-            showlegend=False, # Hide legend to save space in narrow column
-            height=400, # Slightly smaller than the main graph
+            showlegend=False, 
+            height=400, 
             margin=dict(l=0, r=0, t=30, b=0)
         )
         st.plotly_chart(fig_rank, use_container_width=True)
@@ -215,9 +224,11 @@ with col4:
 st.markdown("---")
 st.subheader("🆕 New Entries Radar")
 
-df_new = load_data('https://raw.githubusercontent.com/chinedumsunday/youtube_pipeline/main/results/new_entries.csv')
+df_new = load_data('./results/new_entries.csv')
 
 if df_new is not None and not df_new.empty:
+    # Instead of a boring list, let's use Metrics or Tiles
+    # We display the first 4 new entries as Cards
     
     new_cols = st.columns(4)
     for i, row in enumerate(df_new.head(4).itertuples()):
